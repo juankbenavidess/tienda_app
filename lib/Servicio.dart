@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tienda_app/Peliculas.dart';
 
-String ip="172.16.1.253/";
-String urlser="http://"+ip+":8080/ProyectoAppDis/srv/services/getPeliculas";
+String ip="172.16.1.253";
+String urlser="http://"+ip+":8080/ProyectoAppDis/srv/servicios/getPeliculas";
 bool bandera = false;
 Future<List<Peliculas>> getProductos() async {
   print(urlser);

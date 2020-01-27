@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tienda_app/DetallesPro.dart';
 //import 'package:tienda_app/DetallesPro.dart';
 
 
@@ -14,7 +15,7 @@ void main() => runApp(Menu());
 class Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Peliculas';
+    final appTitle = 'Productos';
     return MaterialApp(
       title: appTitle,
       home: MyHomePage(title: appTitle),
@@ -58,7 +59,7 @@ class MyHomePage extends StatelessWidget {
             ),
           ),
           Ink(
-            color: Colors.blue,
+            color: Colors.black,
             child: ListTile(
               title: Text("Ajustes"),
               onTap: () {},
@@ -89,7 +90,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.black,
 
       ),
 
@@ -133,7 +134,7 @@ class PhotosList extends StatelessWidget {
       itemBuilder: (context, index) {
         print(listaPeliculas[index].nombre);
 
-
+        print("Entra");
         return Card(
           color: Colors.white60,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0),),
@@ -151,13 +152,15 @@ class PhotosList extends StatelessWidget {
                     " Año:" +listaPeliculas[index].anio.toString()),
                 onTap: () {
 
-                  /*Navigator.push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          detallesPro(productRes: listaPeliculas[index],),
+                          detallesPro(productRes: listaPeliculas[index])
+                          //DetallesPro(productRes: listaPeliculas[index],),
                     ),
-                  );*/
+                  );
+
 
                   /*
                   Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),
@@ -173,9 +176,30 @@ class PhotosList extends StatelessWidget {
                   image: listaPeliculas[index].imagenHttp,
                 ),
               ),
-              ButtonTheme.bar(
+              ButtonBar(
+                children: <Widget>[
+                  FlatButton(
+                    child: const Text('Añadir al Carrito',
+                      style: TextStyle(color: Colors.black),
+                    ),
+
+
+
+                    onPressed: () {
+
+
+                      print('hola hola jjjj');
+                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
+
+
+                    },
+                  ),
+                ],
+              )
+             /* ButtonTheme.bar(
                 child: ButtonBar(
                   children: <Widget>[
+
                     FlatButton(
                       child: const Text('Añadir al Carrito',
                         style: TextStyle(color: Colors.black),
@@ -184,16 +208,15 @@ class PhotosList extends StatelessWidget {
 
 
                       onPressed: () {
-                        /*
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),
-                        );
 
-                         */
+                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
+
+
                       },
                     ),
                   ],
                 ),
-              ),
+              ),*///hol
             ],
           ),
 
