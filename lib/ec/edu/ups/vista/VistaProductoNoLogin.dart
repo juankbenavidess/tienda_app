@@ -2,33 +2,19 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tienda_app/AnadirCarrito.dart';
-import 'package:tienda_app/Peliculas.dart';
+import 'package:tienda_app/ec/edu/ups/vista/AnadirCarrito.dart';
+import 'package:tienda_app/ec/edu/ups/modelo/Pelicula.dart';
+import 'package:tienda_app/ec/edu/ups/vista/carritoLista.dart';
+import 'package:tienda_app/ec/edu/ups/controlador/ControladorServicio.dart' as servicio;
+
 
 
 
 void main() {
-  runApp(detallesPro());
+  runApp(VistaProductoNoLogin());
 }
 
-Future<String>  anadirCarrito(String _urlServicio,String _idPelicula,String _cedulaUsuario) async
-{
-  /**
-   * Para mostrar consumir un post
-   */
-  print(_urlServicio+"__"+_idPelicula+"___"+_cedulaUsuario);
-  final _url = _urlServicio;
-  final _headers = {"Content-type": "application/json"};
-  var _body = '{ "parametro" : ":$_idPelicula:$_cedulaUsuario:"}';
-  final response = await http.post(_url, headers: _headers , body : _body);
-  print( response.body);
-  /**
-   * Para consumir un get obteniendo las compras de un usuario
-   */
-  final response2 = await http.get("http://172.16.1.253:8080/ProyectoAppDis/srv/servicios/getComprasXCedula?parametro=::$_cedulaUsuario:");
 
-  print(response2.body);
-}
 
 
 
@@ -36,17 +22,17 @@ final musicaReference = FirebaseDatabase.instance.reference().child("musica");
 TextStyle style =
 TextStyle(fontFamily: 'Montserrat', fontSize: 2.0, height: 12);
 
-List<Peliculas> listCarrito = new List<Peliculas>();
+List<Pelicula> listCarrito = new List<Pelicula>();
 
-class detallesPro extends StatelessWidget {
+class VistaProductoNoLogin extends StatelessWidget {
 
   /*UsuarioF usuariores;*/
 
-  Peliculas productRes;
+  Pelicula productRes;
   /*
   MostrarPeliculas({@required this.productRes, @required this.usuariores});
 */
-  detallesPro({@required this.productRes});
+  VistaProductoNoLogin({@required this.productRes});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +74,7 @@ class detallesPro extends StatelessWidget {
             Icons.favorite_border,
             color: Colors.red[500],
           ),
-          Text(productRes.cantidadVotos.toString()),
+          Text(productRes.listaVoto.length.toString()),
         ],
       ),
     );
@@ -173,10 +159,12 @@ class detallesPro extends StatelessWidget {
             const SizedBox(height: 30),
             RaisedButton(
               onPressed: () {
-                String url = "http://172.16.1.253:8080/ProyectoAppDis/srv/servicios/addCarrito";
-                String idPelicula = "1";
+
+                String idPelicula = productRes.codigoPelicula.toString()
+
+                ;
                 String cedulaUsuario = "0105007199";
-               anadirCarrito(url,idPelicula,cedulaUsuario);
+               servicio.addCarrito(idPelicula,cedulaUsuario);
               },
               color: Colors.white,
               child: const Text(
@@ -230,11 +218,21 @@ class detallesPro extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
 
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => carritoLista(),
+                        //******************************************
+
+                  //DetallesPro(productRes: listaPeliculas[index],),
+                ),
+              );
+
               },
             child: Icon(
               Icons.shopping_cart,
               size: 26.0,
             ),
+
           )
       ),
   ],

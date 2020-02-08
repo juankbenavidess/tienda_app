@@ -2,12 +2,18 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tienda_app/DetallesPro.dart';
-//import 'package:tienda_app/DetallesPro.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaProductoNoLogin.dart';
+import 'package:tienda_app/ec/edu/ups/vista/carritoLista.dart';
+import 'package:tienda_app/ec/edu/ups/vista/ListadoCompras.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
+//import 'package:tienda_app/VistaProductoNoLogin.dart';
 
 
-import 'Peliculas.dart';
-import 'Servicio.dart';
+import '../modelo/Pelicula.dart';
+import '../controlador/ControladorServicio.dart';
+
+final List<String> entries = <String>['A', 'B', 'C'];
+final List<int> colorCodes = <int>[600, 500, 100];
 
 
 void main() => runApp(Menu());
@@ -15,7 +21,7 @@ void main() => runApp(Menu());
 class Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Productos';
+    final appTitle = 'Productos Hernan';
     return MaterialApp(
       title: appTitle,
       home: MyHomePage(title: appTitle),
@@ -52,25 +58,45 @@ class MyHomePage extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                   image: NetworkImage(
-                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTck5juvjUIsqFYdvw96IhWY7h6_bh23LEGA7fLOhRbeCBoTeNKtA&s",),
+                      "https://seeklogo.com/images/M/movie-time-cinema-logo-8B5BE91828-seeklogo.com.png",),
 
                   fit: BoxFit.cover),
 
             ),
           ),
           Ink(
-            color: Colors.black,
+            color: Colors.white,
             child: ListTile(
-              title: Text("Ajustes"),
-              onTap: () {},
+              title: Text("listado compras"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ListadoCompras(),
+
+                ),
+                );
+              },
             ),
           ),
           Ink(
             color: Colors.transparent,
             child: ListTile(
-              leading: Icon(Icons.table_chart),
-              title: Text("Explorar"),
-              onTap: () {},
+              leading: Icon(Icons.assignment),
+              title: Text("Ver Compras Realizadas"),
+              onTap: () {
+
+                ///ver compras
+                ///
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ListadoCompras(),
+                    //******************************************
+
+                    //DetallesPro(productRes: listaPeliculas[index],),
+                  ),
+                );
+
+              },
             ),
           ),
           Ink(
@@ -79,8 +105,14 @@ class MyHomePage extends StatelessWidget {
               leading: Icon(Icons.add_shopping_cart),
               title: Text("Carrito Compras"),
               onTap: () {
-                /* Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Carrito()));*/
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => carritoLista(),
+                    //******************************************
+
+                    //DetallesPro(productRes: listaPeliculas[index],),
+                  ),
+                );
               },
             ),
           )
@@ -91,13 +123,34 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         backgroundColor: Colors.black,
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => carritoLista(),
+                      //******************************************
 
+                      //DetallesPro(productRes: listaPeliculas[index],),
+                    ),
+                  );
+                },
+                child: Icon(
+                  Icons.shopping_cart,
+                  size: 40.0,
+                ),
+
+              )
+          ),
+        ],
       ),
 
 
       drawer: menuEleccion,
-      body: FutureBuilder<List<Peliculas>>(
-        future: getProductos(),
+      body: FutureBuilder<List<Pelicula>>(
+        future: getPeliculas(),
 
 
         builder: (context, snapshot) {
@@ -115,16 +168,21 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+
+
+
 class PhotosList extends StatelessWidget {
 
 
-  final List<Peliculas> listaPeliculas;
+
+  final List<Pelicula> listaPeliculas;
 
   PhotosList({Key key, this.listaPeliculas}) : super(key: key);
   @override
   Widget build(BuildContext context) {
 
     return GridView.builder(
+
 
 
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -143,7 +201,7 @@ class PhotosList extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage('https://cdn.pixabay.com/photo/2016/09/16/09/20/books-1673578_960_720.png'),
+                  backgroundImage: NetworkImage('https://image.shutterstock.com/image-vector/vector-logo-slate-board-shooting-260nw-279718811.jpg'),
                 ),
 
                 title: Text(listaPeliculas[index].nombre),
@@ -156,7 +214,8 @@ class PhotosList extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          detallesPro(productRes: listaPeliculas[index])
+                          VistaProductoNoLogin(productRes: listaPeliculas[index])
+
                           //DetallesPro(productRes: listaPeliculas[index],),
                     ),
                   );
@@ -183,17 +242,41 @@ class PhotosList extends StatelessWidget {
                       style: TextStyle(color: Colors.black),
                     ),
 
+                   onPressed: ()
+                      {
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => LoginPage()));
+                      }
 
 
-                    onPressed: () {
 
 
-                      print('hola hola jjjj');
-                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
+
+                   //onPressed: () {
+
+                      //anadirCarrito("http://172.16.209.96:8080/ProyectoAppDis/srv/servicios/addCarrito", listaPeliculas[index].codigoPelicula.toString(), "0105007199");
+                     // anadirCarrito("http://192.168.1.108:8080/ProyectoAppDis/srv/servicios/addCarrito", listaPeliculas[index].codigoPelicula.toString(), "0105007199");
 
 
-                    },
+                     //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
+
+
+
+
+
+
+                   // },
                   ),
+                   ListView.builder(
+                   padding: const EdgeInsets.all(8),
+        itemCount: entries.length,
+        itemBuilder: (BuildContext context, int index) {
+        return Container(
+        height: 50,
+        color: Colors.amber[colorCodes[index]],
+        child: Center(child: Text('Entry ${entries[index]}')),
+        );
+        }
+        )
                 ],
               )
              /* ButtonTheme.bar(
@@ -226,5 +309,10 @@ class PhotosList extends StatelessWidget {
         );
       },
     );
+
   }
+
+
 }
+
+

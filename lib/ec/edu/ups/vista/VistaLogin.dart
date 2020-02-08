@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tienda_app/inicio.dart';
-import 'package:tienda_app/registrar.dart';
+import 'package:tienda_app/ec/edu/ups/vista/inicio.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaProducto.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaCrearUsuario.dart';
 
 
 
@@ -8,11 +9,45 @@ class LoginPage extends StatefulWidget {
   static String tag = 'login-page';
   @override
   _LoginPageState createState() => new _LoginPageState();
+
 }
 
+
+
 class _LoginPageState extends State<LoginPage> {
+
+
+  Widget roundedButton(String buttonLabel, Color bgColor, Color textColor) {
+    var loginBtn = new Container(
+      padding: EdgeInsets.all(5.0),
+      alignment: FractionalOffset.center,
+      decoration: new BoxDecoration(
+        color: bgColor,
+        borderRadius: new BorderRadius.all(const Radius.circular(10.0)),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: const Color(0xFF696969),
+            offset: Offset(1.0, 6.0),
+            blurRadius: 0.001,
+          ),
+        ],
+      ),
+      child: Text(
+        buttonLabel,
+        style: new TextStyle(
+            color: textColor, fontSize: 20.0, fontWeight: FontWeight.bold),
+      ),
+    );
+    return loginBtn;
+  }
+
+
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
+
+
     final logo = SizedBox(
       height: 200,
 
@@ -50,8 +85,8 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () async{
 
          // getProductos();
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Menu()));
+            Navigator.push(
+              context, MaterialPageRoute(builder: (context) => productos2()));
         // Navigator.of(context).pushNamed(HomePage.tag)
         },
         padding: EdgeInsets.all(12),

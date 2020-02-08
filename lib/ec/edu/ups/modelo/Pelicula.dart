@@ -1,14 +1,14 @@
 // To parse this JSON data, do
 //
-//     final welcome = welcomeFromJson(jsonString);
+//     final peliculas = peliculasFromJson(jsonString);
 
 import 'dart:convert';
 
-List<Peliculas> listaPeliculas(String str) => List<Peliculas>.from(json.decode(str).map((x) => Peliculas.fromJson(x)));
+List<Pelicula> peliculaFromJson(String str) => List<Pelicula>.from(json.decode(str).map((x) => Pelicula.fromJson(x)));
 
-String stringPeliculas(List<Peliculas> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String peliculaToJson(List<Pelicula> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Peliculas {
+class Pelicula {
   int codigoPelicula;
   String nombre;
   String descripcion;
@@ -19,8 +19,9 @@ class Peliculas {
   int cantidadVentas;
   String imagenHttp;
   int idCategoria;
+  List<ListaVoto> listaVoto;
 
-  Peliculas({
+  Pelicula({
     this.codigoPelicula,
     this.nombre,
     this.descripcion,
@@ -31,9 +32,10 @@ class Peliculas {
     this.cantidadVentas,
     this.imagenHttp,
     this.idCategoria,
+    this.listaVoto,
   });
 
-  factory Peliculas.fromJson(Map<String, dynamic> json) => Peliculas(
+  factory Pelicula.fromJson(Map<String, dynamic> json) => Pelicula(
     codigoPelicula: json["codigoPelicula"],
     nombre: json["nombre"],
     descripcion: json["descripcion"],
@@ -44,6 +46,7 @@ class Peliculas {
     cantidadVentas: json["cantidadVentas"],
     imagenHttp: json["imagenHttp"],
     idCategoria: json["idCategoria"],
+    listaVoto: List<ListaVoto>.from(json["listaVoto"].map((x) => ListaVoto.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -57,5 +60,30 @@ class Peliculas {
     "cantidadVentas": cantidadVentas,
     "imagenHttp": imagenHttp,
     "idCategoria": idCategoria,
+    "listaVoto": List<dynamic>.from(listaVoto.map((x) => x.toJson())),
+  };
+}
+
+class ListaVoto {
+  int idVoto;
+  String cedulaUsuario;
+  int idPelicula;
+
+  ListaVoto({
+    this.idVoto,
+    this.cedulaUsuario,
+    this.idPelicula,
+  });
+
+  factory ListaVoto.fromJson(Map<String, dynamic> json) => ListaVoto(
+    idVoto: json["idVoto"],
+    cedulaUsuario: json["cedulaUsuario"],
+    idPelicula: json["idPelicula"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "idVoto": idVoto,
+    "cedulaUsuario": cedulaUsuario,
+    "idPelicula": idPelicula,
   };
 }

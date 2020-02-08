@@ -72,6 +72,9 @@ class _MyHomePageState extends State<MyHomePage> {
           OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
+
+
+
     final cedulaFiel = TextField(
       controller: TextEditingController(),
       obscureText: false,

@@ -4,11 +4,11 @@
 
 import 'dart:convert';
 
-List<Usuarios> usuariosFromJson(String str) => List<Usuarios>.from(json.decode(str).map((x) => Usuarios.fromJson(x)));
+List<Usuario> usuarioFromJson(String str) => List<Usuario>.from(json.decode(str).map((x) => Usuario.fromJson(x)));
 
-String usuariosToJson(List<Usuarios> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String usuarioToJson(List<Usuario> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Usuarios {
+class Usuario {
   String cedula;
   String nombre;
   String apellido;
@@ -24,7 +24,7 @@ class Usuarios {
   String tipoUsuario;
   List<ListaCarrito> listaCarrito;
 
-  Usuarios({
+  Usuario({
     this.cedula,
     this.nombre,
     this.apellido,
@@ -41,7 +41,7 @@ class Usuarios {
     this.listaCarrito,
   });
 
-  factory Usuarios.fromJson(Map<String, dynamic> json) => Usuarios(
+  factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
     cedula: json["cedula"],
     nombre: json["nombre"],
     apellido: json["apellido"],
