@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tienda_app/ec/edu/ups/vista/home.dart';
 import 'package:tienda_app/ec/edu/ups/vista/inicio.dart';
 import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
 

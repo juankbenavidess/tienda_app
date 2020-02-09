@@ -103,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Registro_()));
+              context, MaterialPageRoute(builder: (context) => VistaCrearUsuario()));
           //  Navigator.of(context).pushNamed(HomePage.tag);
         },
         padding: EdgeInsets.all(12),

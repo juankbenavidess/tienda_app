@@ -16,7 +16,6 @@ import 'VistaLogin.dart' as login;
 
 void main() => runApp(productos2());
 
-String ipgeneral=servicio.ipServidor;
 
 
 class productos2 extends StatelessWidget {

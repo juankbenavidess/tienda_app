@@ -15,13 +15,14 @@ import '../controlador/ControladorServicio.dart';
 final List<String> entries = <String>['A', 'B', 'C'];
 final List<int> colorCodes = <int>[600, 500, 100];
 
+//no login productos
 
 void main() => runApp(Menu());
 
 class Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Productos Hernan';
+    final appTitle = 'Peliculas Inicial';
     return MaterialApp(
       title: appTitle,
       home: MyHomePage(title: appTitle),
@@ -71,7 +72,7 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ListadoCompras(),
+                    MaterialPageRoute(builder: (context) => LoginPage(),
 
                 ),
                 );
@@ -89,7 +90,7 @@ class MyHomePage extends StatelessWidget {
                 ///
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ListadoCompras(),
+                  MaterialPageRoute(builder: (context) => LoginPage(),
                     //******************************************
 
                     //DetallesPro(productRes: listaPeliculas[index],),
@@ -107,7 +108,7 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => carritoLista(),
+                  MaterialPageRoute(builder: (context) => LoginPage(),
                     //******************************************
 
                     //DetallesPro(productRes: listaPeliculas[index],),
@@ -130,7 +131,7 @@ class MyHomePage extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => carritoLista(),
+                    MaterialPageRoute(builder: (context) => LoginPage(),
                       //******************************************
 
                       //DetallesPro(productRes: listaPeliculas[index],),
@@ -151,8 +152,6 @@ class MyHomePage extends StatelessWidget {
       drawer: menuEleccion,
       body: FutureBuilder<List<Pelicula>>(
         future: getPeliculas(),
-
-
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           return snapshot.hasData
@@ -192,7 +191,6 @@ class PhotosList extends StatelessWidget {
       itemBuilder: (context, index) {
         print(listaPeliculas[index].nombre);
 
-        print("Entra");
         return Card(
           color: Colors.white60,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0),),
@@ -201,7 +199,7 @@ class PhotosList extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage('https://image.shutterstock.com/image-vector/vector-logo-slate-board-shooting-260nw-279718811.jpg'),
+                  backgroundImage: NetworkImage(listaPeliculas[index].imagenHttp.toString()),
                 ),
 
                 title: Text(listaPeliculas[index].nombre),
@@ -216,16 +214,11 @@ class PhotosList extends StatelessWidget {
                       builder: (context) =>
                           VistaProductoNoLogin(productRes: listaPeliculas[index])
 
-                          //DetallesPro(productRes: listaPeliculas[index],),
                     ),
                   );
 
 
-                  /*
-                  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),
-                  );
 
-                   */
                 },
               ),
               Center(
@@ -248,58 +241,11 @@ class PhotosList extends StatelessWidget {
                       }
 
 
-
-
-
-                   //onPressed: () {
-
-                      //anadirCarrito("http://172.16.209.96:8080/ProyectoAppDis/srv/servicios/addCarrito", listaPeliculas[index].codigoPelicula.toString(), "0105007199");
-                     // anadirCarrito("http://192.168.1.108:8080/ProyectoAppDis/srv/servicios/addCarrito", listaPeliculas[index].codigoPelicula.toString(), "0105007199");
-
-
-                     //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
-
-
-
-
-
-
-                   // },
                   ),
-                   ListView.builder(
-                   padding: const EdgeInsets.all(8),
-        itemCount: entries.length,
-        itemBuilder: (BuildContext context, int index) {
-        return Container(
-        height: 50,
-        color: Colors.amber[colorCodes[index]],
-        child: Center(child: Text('Entry ${entries[index]}')),
-        );
-        }
-        )
+
                 ],
               )
-             /* ButtonTheme.bar(
-                child: ButtonBar(
-                  children: <Widget>[
 
-                    FlatButton(
-                      child: const Text('Añadir al Carrito',
-                        style: TextStyle(color: Colors.black),
-                      ),
-
-
-
-                      onPressed: () {
-
-                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
-
-
-                      },
-                    ),
-                  ],
-                ),
-              ),*///hol
             ],
           ),
 

@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:tienda_app/ec/edu/ups/modelo/Carrito.dart';
 import 'package:tienda_app/ec/edu/ups/modelo/FacturaCabecera.dart';
 import 'package:tienda_app/ec/edu/ups/modelo/Pelicula.dart' as PeliculaModelo;
-import 'package:tienda_app/ec/edu/ups/modelo/Usuarios.dart';
+import 'package:tienda_app/ec/edu/ups/modelo/Usuarios.dart' ;
+
 
 String ipServidor = "192.168.1.104";
 
@@ -28,6 +29,20 @@ Future<String> addCarrito(String _idPelicula, String _cedulaUsuario) async {
   var _body = '{ "parametro" : ":$_idPelicula:$_cedulaUsuario:"}';
   final response = await http.post(url, headers: _headers, body: _body);
   print(response.body);
+}
+
+
+Future<String> addUser(Usuario _usuario) async
+{
+  String url =
+      "http://" + ipServidor + ":8080/ProyectoAppDis/srv/servicios/agregarUsuario";
+  final _headers = {"Content-type": "application/json"};
+ Map<String, dynamic> jsonBody = _usuario.toJson();
+  String _body = json.encode(jsonBody);
+  final response = await http.post(url, headers: _headers, body: _body , encoding: Encoding.getByName('utf8'));
+  print(response.body);
+
+
 }
 
 Future<String> removeCarrito(String _idPelicula, String _cedulaUsuario) async {
@@ -103,9 +118,7 @@ Future<String> login(String username, String password) async {
 
 
 Future<List<FacturaCabecera>> getComprasXCedula(String cedula) async {
-  /**
-   * Para mostrar consumir un post
-   */
+
   final _url = "http://" +
       ipServidor +
       ":8080/ProyectoAppDis/srv/servicios/getComprasXCedula?parametro=::$cedula:";
@@ -175,6 +188,48 @@ Future<PeliculaModelo.Pelicula> getPelicula(int idPelicula) async {
 
 
 
+
+Future<String> removeVoto(int idPelicula, String cedula) async {
+  /**
+   * Para mostrar consumir un post
+   */
+  final _url =
+      "http://" + ipServidor + ":8080/ProyectoAppDis/srv/servicios/removeLike";
+  final _headers = {"Content-type": "application/json"};
+  var _body = '{ "parametro" : ":$cedula:$idPelicula:"}';
+  final response = await http.post(_url, headers: _headers, body: _body);
+  print("respuesta estado si tru o fals: "+response.body);
+  return response.body.toString();
+}
+
+Future<String> addVoto(int idPelicula, String cedula) async {
+  /**
+   * Para mostrar consumir un post
+   */
+  final _url =
+      "http://" + ipServidor + ":8080/ProyectoAppDis/srv/servicios/addLike";
+  final _headers = {"Content-type": "application/json"};
+  var _body = '{ "parametro" : ":$cedula:$idPelicula:"}';
+  final response = await http.post(_url, headers: _headers, body: _body);
+  print("respuesta estado si tru o fals: "+response.body);
+  return response.body.toString();
+}
+
+
+
+
+Future<bool> comprobarVoto(int idPelicula, String cedula) async {
+  /**
+   * Para mostrar consumir un post
+   */
+  final _url =
+      "http://" + ipServidor + ":8080/ProyectoAppDis/srv/servicios/comprobarVoto";
+  final _headers = {"Content-type": "application/json"};
+  var _body = '{ "parametro" : ":$cedula:$idPelicula:"}';
+  final response = await http.post(_url, headers: _headers, body: _body);
+  print("respuesta estado si tru o fals: "+response.body);
+  return response.body.toString().contains("true");
+}
 
 
 
