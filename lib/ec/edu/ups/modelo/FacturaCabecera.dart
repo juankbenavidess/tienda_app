@@ -11,9 +11,9 @@ String facturaCabeceraToJson(List<FacturaCabecera> data) => json.encode(List<dyn
 class FacturaCabecera {
   int numeroFactura;
   int fecha;
-  int subtotal;
-  int descuento;
-  int iva;
+  double subtotal;
+  double descuento;
+  double iva;
   double total;
   String estado;
   String numeroTarjetaCredito;

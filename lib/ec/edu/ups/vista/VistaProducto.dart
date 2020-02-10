@@ -1,284 +1,336 @@
+import 'dart:convert';
 
-
-import 'package:flutter/cupertino.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:tienda_app/ec/edu/ups/vista/VistaProductoNoLogin.dart';
-import 'package:tienda_app/ec/edu/ups/vista/carritoLista.dart';
-import 'package:tienda_app/ec/edu/ups/vista/ListadoCompras.dart';
+import 'package:tienda_app/ec/edu/ups/controlador/ControladorRecursos.dart';
+
+import 'package:tienda_app/ec/edu/ups/modelo/Pelicula.dart' as PeliculaModelo;
 import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
-//import 'package:tienda_app/VistaProductoNoLogin.dart';
-
-
-import '../modelo/Pelicula.dart';
-import '../controlador/ControladorServicio.dart' as servicio;
-import 'VistaLogin.dart' as login;
-
-
-void main() => runApp(productos2());
+import 'package:tienda_app/ec/edu/ups/controlador/ControladorServicio.dart' as servicio;
+import 'package:http/http.dart' as http;
 
 
 
-class productos2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final appTitle = 'Productos2';
-    return MaterialApp(
-      title: appTitle,
-      home: MyHomePage(title: appTitle),
-    );
-  }
+/*
+void main() {
+  runApp(VistaProducto());
 }
-
-class MyHomePage extends StatelessWidget {
-  final String title;
-  final String text1;
+*/
 
 
-  MyHomePage(
-      {
-        Key key,
-        this.title,
-        this.text1
-      }
-      ) : super(key: key);
+
+
+
+
+/*
+List<Pelicula> listCarrito = new List<Pelicula>();
+*/
+
+
+
+
+
+
+
+class VistaProducto extends StatelessWidget {
+
+
+  PeliculaModelo.Pelicula  productRes;
+
+
+   bool esvotado=false  ;
+
+  VistaProducto({@required this.productRes, this.esvotado});
+
+
 
 
 
   @override
   Widget build(BuildContext context) {
+    print('Mostrando  productos despues de hacer el login');
 
 
-    var menuEleccion = Drawer(
-      child: ListView(
-        children: <Widget>[
+    Widget titleSection = Container(
 
-          UserAccountsDrawerHeader(
-            accountName: Text("User Cliente"),
-            accountEmail: Text("juancarlos.pelistore@gmail.com"),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: NetworkImage(
-                      "https://seeklogo.com/images/M/movie-time-cinema-logo-8B5BE91828-seeklogo.com.png",),
-
-                  fit: BoxFit.cover),
-
-            ),
-          ),
-          Ink(
-            color: Colors.white,
-            child: ListTile(
-              title: Text("listado compras"),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ListadoCompras(),
+      padding: const EdgeInsets.all(32),
+      child: Row(
+        children: [
+          Expanded(
+            /*1*/
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /*2*/
+                Container(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    productRes.nombre,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  "Precio \$" + productRes.precio.toString(),
 
                 ),
-                );
-              },
+                //Text( "Editorial = " + productRes.editorial),
+                Text( "Año = " + productRes.anio.toString()),
+
+              ],
             ),
           ),
-          Ink(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: Icon(Icons.assignment),
-              title: Text("Ver Compras Realizadas"),
-              onTap: () {
+          /*3*/
 
-                ///ver compras
-                ///
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ListadoCompras(),
-                    //******************************************
+          IconButton(
+            icon: Icon(Icons.star
+            ,
+            color: esvotado?Colors.red:Colors.black,),
+            tooltip: 'Dale al like :)',
 
-                    //DetallesPro(productRes: listaPeliculas[index],),
-                  ),
-                );
+            //aqui pilas para el like
+            onPressed: () async {
 
-              },
-            ),
+
+              /**
+               * aqui agregar el servicio
+               */
+             int _codigo =  productRes.codigoPelicula;
+              String url = "http://" +
+                  servicio.ipServidor +
+                  ":8080/ProyectoAppDis/srv/servicios/getPelicula?id=::$_codigo:";
+              final response = await http.get(url);
+              var producto = new  PeliculaModelo.Pelicula();
+
+              producto =    PeliculaModelo.Pelicula.fromJson(json.decode(response.body));
+              this.productRes= producto;
+
+
+              /**
+               * ya termina el servicio
+               */
+
+
+cedula = "0105007199";
+                  if(esvotado){
+                    print("quitando voto");
+
+                    /**
+                     * aqui agrega el servicio
+                     */
+                   int  idPelicula = producto.codigoPelicula;
+                    String _url =
+                        "http://" + servicio.ipServidor + ":8080/ProyectoAppDis/srv/servicios/removeLike";
+                    final _headers = {"Content-type": "application/json"};
+                    var _body = '{ "parametro" : ":$cedula:$idPelicula:"}';
+                    final response = await http.post(_url, headers: _headers, body: _body);
+                    print("respuesta estado si tru o fals: "+response.body);
+
+                    /**
+                     * aqui termina servicio remov like
+                     */
+                    //ojo cambiar cedula
+                    esvotado = false;
+                   Navigator.of(context).pop(true);
+
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => VistaProducto(productRes: producto, esvotado: esvotado)));
+
+
+
+                  }else{
+                    print("dando voto");
+                   //
+
+                    int  idPelicula = producto.codigoPelicula;
+                    String _url =
+                        "http://" + servicio.ipServidor + ":8080/ProyectoAppDis/srv/servicios/addLike";
+                    final _headers = {"Content-type": "application/json"};
+                    var _body = '{ "parametro" : ":$cedula:$idPelicula:"}';
+                    final response = await http.post(_url, headers: _headers, body: _body);
+
+                    esvotado = true;
+                   Navigator.of(context).pop(true);
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => VistaProducto(productRes: producto, esvotado: esvotado)));
+
+                  }
+            },
+            color  :    !esvotado  ? Colors.black:Colors.red,///cambiar cedula ojo
           ),
-          Ink(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: Icon(Icons.add_shopping_cart),
-              title: Text("Carrito Compras"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => carritoLista(),
-                    //******************************************
-
-                    //DetallesPro(productRes: listaPeliculas[index],),
-                  ),
-                );
-              },
-            ),
-          )
+          Text(productRes.listaVoto.length.toString()),
         ],
       ),
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.black,
-        actions: <Widget>[
-          Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => carritoLista(),
-                      //******************************************
 
-                      //DetallesPro(productRes: listaPeliculas[index],),
-                    ),
-                  );
-                },
-                child: Icon(
-                  Icons.shopping_cart,
-                  size: 40.0,
-                ),
+    Color color = Theme.of(context).primaryColorDark;
 
-              )
-          ),
-        ],
-      ),
-
-
-      drawer: menuEleccion,
-      body: FutureBuilder<List<Pelicula>>(
-        future: servicio.getPeliculas(),
-
-
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData
-              ? PhotosList(listaPeliculas: snapshot.data)
-              : Center(child: CircularProgressIndicator());
+    final buttonCompartir = Material(
+      child: MaterialButton(
+        child: _buildButtonColumn(color, Icons.share, 'Compartir'),
+        onPressed: () async {
+//final ByteData bytes = await rootBundle.load(productRes.urlImagen);
+          // Share.file(productRes.nombre, productRes.descripcion, bytes.buffer.asUint8List(), 'image/jpg', text: 'My optional text.')
+          Share.text(
+              productRes.nombre,
+              "Nombre: \n"
+                  +productRes.nombre+
+                  "Descripcion: \n" +
+                  productRes.descripcion +
+                  "\n\n PRECIO \$" +
+                  productRes.precio.toString() +
+                  "   \n\n" +
+                  productRes.imagenHttp,
+              'text/plain');
         },
-
-
       ),
+    );
+
+    Widget ico = Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const <Widget>[
+
+            /*Icon(
+              Icons.audiotrack,
+              color: Colors.green,
+              size: 30.0,
+            ),
+            Icon(
+              Icons.beach_access,
+              color: Colors.blue,
+              size: 36.0,
+            ),*/
+          ],
+        )
+
+
 
     );
 
-  }
-}
+    Widget textSection2 = Container(
+      padding: const EdgeInsets.all(10),
+      child: Text(
+        "Descripcion" ,
+        style: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
 
-class PhotosList extends StatelessWidget {
-
-
-
-  final List<Pelicula> listaPeliculas;
-
-  PhotosList({Key key, this.listaPeliculas}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-
-    return GridView.builder(
-
-
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
       ),
-      itemCount: listaPeliculas.length,
-      itemBuilder: (context, index) {
-        print(listaPeliculas[index].nombre);
-
-        print("Entra");
-        return Card(
-          color: Colors.white60,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0),),
-          elevation: 20,
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage('https://image.shutterstock.com/image-vector/vector-logo-slate-board-shooting-260nw-279718811.jpg'),
-                ),
-
-                title: Text(listaPeliculas[index].nombre),
-                subtitle: Text("\ Precio \$ " + listaPeliculas[index].precio.toString()+"\                "
-                    "                                       "
-                    " Año:" +listaPeliculas[index].anio.toString()),
-                onTap: () {
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          VistaProductoNoLogin(productRes: listaPeliculas[index])
-                          //DetallesPro(productRes: listaPeliculas[index],),
-                    ),
-                  );
+    );
 
 
-                  /*
-                  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),
-                  );
+    Widget textSection = Container(
+      padding: const EdgeInsets.all(20),
+      child: Text(
+        productRes.descripcion,
+        softWrap: true,
+      ),
+    );
 
-                   */
-                },
+
+    @override
+    Widget build(BuildContext context) {
+      return new Center(
+
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(height: 30),
+            RaisedButton(
+              onPressed: () {
+                  servicio.addCarrito(productRes.codigoPelicula.toString(), "0105007199");
+                mostrarMensaje("Producto añadido al carrito");
+              },
+              color: Colors.white,
+              child: const Text(
+                  'Anadir al carrito',
+                  style: TextStyle(fontSize: 20)
               ),
-              Center(
-                child: FadeInImage.assetNetwork(
-                  height: 220,
-                  placeholder: 'assets/loading.gif',
-                  image: listaPeliculas[index].imagenHttp,
-                ),
-              ),
-              ButtonBar(
-                children: <Widget>[
-                  FlatButton(
-                    child: const Text('Añadir al Carrito',
-                      style: TextStyle(color: Colors.black),
-                    ),
+            ),
+
+          ],
+        ),
+      );
+    }
 
 
 
-                    onPressed: () {
-
-                      servicio.addCarrito(listaPeliculas[index].codigoPelicula.toString(), "0105007199");
-
-                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
-
-
-                    },
-                  ),
-                ],
-              )
-             /* ButtonTheme.bar(
-                child: ButtonBar(
-                  children: <Widget>[
-
-                    FlatButton(
-                      child: const Text('Añadir al Carrito',
-                        style: TextStyle(color: Colors.black),
-                      ),
 
 
 
-                      onPressed: () {
+    final ButtonComprar = Material(
 
-                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => DetallesPro()),);
+      borderRadius: BorderRadius.circular(10.0),
+      color: Colors.black,
+
+      child: MaterialButton(
+        onPressed: () {},
+        child: Text("Comprar",
+
+            textAlign: TextAlign.center,
+             ),
+      ),
+    );
+    return MaterialApp(
+      title: 'Peliculas',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Pelicula Logueado'),
+            actions: <Widget>[
+        Padding(
+        padding: EdgeInsets.only(right: 20.0),
+
+      ),
+  ],
+
+        ),
+        body: ListView(
+          children: [
+            FadeInImage.assetNetwork(
+              height: 400,
+
+              placeholder: 'assets/loading.gif',
+              image: productRes.imagenHttp,
+              fit: BoxFit.cover,
+            ),
+            titleSection,
+            ico,
+            textSection2,
+            textSection,
+            build(context),
+            buttonCompartir,
 
 
-                      },
-                    ),
-                  ],
-                ),
-              ),*///hol
-            ],
+            //    ButtonComprar,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Column _buildButtonColumn(Color color, IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: color),
+        Container(
+          margin: const EdgeInsets.only(top: 8),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: color,
+            ),
           ),
-
-
-
-
-        );
-      },
+        ),
+      ],
     );
   }
 }

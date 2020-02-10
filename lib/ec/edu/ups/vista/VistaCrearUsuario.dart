@@ -1,20 +1,17 @@
+import 'dart:convert';
 import 'dart:ui';
-import 'dart:wasm';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tienda_app/ec/edu/ups/modelo/Carrito.dart';
+
+import 'package:tienda_app/ec/edu/ups/controlador/ControladorRecursos.dart';
 import 'package:tienda_app/ec/edu/ups/modelo/Usuarios.dart';
-import 'package:tienda_app/ec/edu/ups/vista/inicio.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
 import '../controlador/ControladorServicio.dart' as servicio;
+import 'package:http/http.dart' as http;
 
-
-void main() => runApp(VistaCrearUsuario());
-
+/*
 class VistaCrearUsuario extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -42,9 +39,10 @@ class VistaCrearUsuario extends StatelessWidget {
     );
   }
 }
+*/
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class VistaCrearUsuario extends StatefulWidget {
+  VistaCrearUsuario({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -58,10 +56,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<StatefulWidget>   createState() => new _VistaCrearUsuarioState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _VistaCrearUsuarioState extends State<VistaCrearUsuario> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   // final myController = TextEditingController();
   TextEditingController controllernombre = TextEditingController();
@@ -79,12 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-void setfecha(){
-
-
-}
   @override
   Widget build(BuildContext context) {
+    print("mostrando la centana para registrar usuario");
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -94,7 +89,7 @@ void setfecha(){
       final nombreField = TextField(
       controller: controllernombre,
       obscureText: false,
-
+        style: style,
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Nombre",
@@ -247,7 +242,7 @@ void setfecha(){
         onPressed: () async {
           
 
-/*
+
          final  _nombre=controllernombre.text.toString();
           final _apellido=controllerapellido.text.toString();
           final  _cedula=controllercedula.text.toString();
@@ -279,13 +274,38 @@ void setfecha(){
          );
 
          print(u.toJson());
-         print(servicio.addUser(u));
-*/
-         SharedPreferences prefs = await SharedPreferences.getInstance();
-         await prefs.setString('login', "primera vez");
-       //  String counter = prefs.getString('login' ?? "nada") ;
-        // print('Probado shared $counter  ');
-        //await prefs.setString('login', counter);
+
+         String url =
+             "http://" + servicio.ipServidor + ":8080/ProyectoAppDis/srv/servicios/agregarUsuario";
+         final _headers = {"Content-type": "application/json"};
+         Map<String, dynamic> jsonBody = u.toJson();
+         String _body = json.encode(jsonBody);
+
+          http.Response response =  await http.post(url, headers: _headers, body: _body ,encoding: Encoding.getByName("utf8"))  ;
+
+          String respuesta = response.body.toString();
+          String mensaje = "";
+          if(respuesta.contains("Error")){
+            mensaje = "usuario ya creado";
+          }else{
+            if(!respuesta.contains("no")) {
+              mostrarMensaje(respuesta);
+              limpiarcampos();
+              Navigator.of(context).pop(true);
+            }else
+              mensaje = "Ingrese los datos corrrectamente";
+          }
+
+          mostrarMensaje(mensaje) ;
+
+
+
+
+
+
+
+
+
 
           },
         child: Text("Registro",
@@ -294,57 +314,97 @@ void setfecha(){
                 color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
-    return Scaffold(
-        body: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(36.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 50,
-                      child: Image.network("http://imgfz.com/i/4XWKr6E.png",
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    SizedBox(height: 15.0),
-                    nombreField,
-                    SizedBox(height: 15.0),
-                    apellidoField,
-                    SizedBox(height: 15.0),
-                    cedulaFiel,
-                    SizedBox(height: 15.0),
-                    nicknamefield,
-                    SizedBox(height: 15.0),
-                    emailField,
-                    SizedBox(height: 25.0),
-                    telefonoField,
-                    SizedBox(height: 25.0),
-                    direccionfield,
-                    SizedBox(height: 15.0),
-                    passwordField,
-                    SizedBox(
-                      height: 25.0,
-                    ),
-                    fechafield,
-                    SizedBox(
-                      height: 25.0,
-                    ),
 
-                    SizedBox(height: 15.0),
-                    resButon,
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ));
+     return  new  WillPopScope(child: new Scaffold(
+       body: SingleChildScrollView(
+
+         child: Center(
+
+           child: Container(
+             color: Colors.white,
+             child: Padding(
+               padding: const EdgeInsets.all(36.0),
+               child: Column(
+
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: <Widget>[
+                   SizedBox(
+                     height: 50,
+                     child: Image.network("http://imgfz.com/i/4XWKr6E.png",
+                       fit: BoxFit.contain,
+                     ),
+                   ),
+                   SizedBox(height: 15.0),
+                   nombreField,
+                   SizedBox(height: 15.0),
+                   apellidoField,
+                   SizedBox(height: 15.0),
+                   cedulaFiel,
+                   SizedBox(height: 15.0),
+                   nicknamefield,
+                   SizedBox(height: 15.0),
+                   emailField,
+                   SizedBox(height: 25.0),
+                   telefonoField,
+                   SizedBox(height: 25.0),
+                   direccionfield,
+                   SizedBox(height: 15.0),
+                   passwordField,
+                   SizedBox(
+                     height: 25.0,
+                   ),
+                   fechafield,
+                   SizedBox(
+                     height: 25.0,
+                   ),
+
+                   SizedBox(height: 15.0),
+                   resButon,
+                   SizedBox(
+                     height: 15.0,
+                   ),
+                 ],
+               ),
+             ),
+           ),
+         ),
+       ),
+     ),
+          );
+
   }
+
+
+
+
+
+  void limpiarcampos(){
+  String nada = "";
+        controllerfecha.text = nada;
+        controllerdireccion.text = nada;
+        controllernickname.text = nada;
+        controllercontrasena.text = nada;
+        controllercorreo.text = nada;
+        controllertelefono.text = nada;
+        controllercedula.text = nada;
+        controllernombre.text = nada;
+        controllerapellido.text = nada;
+  }
+
+  /*
+  Future<bool> _onBackPressed(BuildContext context) {
+    print("hola back");
+    Navigator.of(context).pop(true);
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
+
+    return Future.value(
+        false);
+
+  }
+*/
+
+
+
 }

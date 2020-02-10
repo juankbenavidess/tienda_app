@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tienda_app/ec/edu/ups/vista/inicio.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaProductosNoLogin.dart';
 import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
 
 
-void main() => runApp(Menu());
+void main() => runApp(VistaProductosNoLogin());
 
 class MyApp extends StatelessWidget {
   final routes = <String, WidgetBuilder>{

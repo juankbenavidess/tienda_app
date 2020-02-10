@@ -1,11 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tienda_app/ec/edu/ups/vista/AnadirCarrito.dart';
-import 'package:tienda_app/ec/edu/ups/modelo/Pelicula.dart';
+import 'package:tienda_app/ec/edu/ups/modelo/Pelicula.dart' as PeliculaModelo;
 import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
-import 'package:tienda_app/ec/edu/ups/vista/carritoLista.dart';
 import 'package:tienda_app/ec/edu/ups/controlador/ControladorServicio.dart' as servicio;
 
 
@@ -19,16 +20,13 @@ void main() {
 
 
 
-final musicaReference = FirebaseDatabase.instance.reference().child("musica");
-TextStyle style =
-TextStyle(fontFamily: 'Montserrat', fontSize: 2.0, height: 12);
 
 
-
+/*
 List<Pelicula> listCarrito = new List<Pelicula>();
 
 
-
+*/
 
 
 
@@ -38,8 +36,8 @@ class VistaProductoNoLogin extends StatelessWidget {
 
   /*UsuarioF usuariores;*/
 
-  Pelicula productRes;
-   bool esvotado  = false;
+  PeliculaModelo.Pelicula  productRes;
+   //int idProducto ;
 
   /*
   MostrarPeliculas({@required this.productRes, @required this.usuariores});
@@ -51,27 +49,19 @@ class VistaProductoNoLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   // Pelicula productRes;
 
-      Future<Pelicula> productorefresh = servicio.getPelicula(productRes.codigoPelicula);
 
-      productorefresh.then((value) async {
 
-        print("imprimiendo pelicula refrescada antes "+this.productRes.listaVoto.length.toString());
-        this.productRes = value as Pelicula;
-        print("imprimiendo pelicula refrescada despues "+this.productRes.listaVoto.length.toString());
-        //puedes llamar a setState aquí para refrescar el widget
-      });
+
+    print('Mostrando un producto antes de hacer el login');
 
 
 
 
 
 
-      Future<bool> cromprobador = servicio.comprobarVoto(productRes.codigoPelicula, "0105007199");//ojo cambiar cedula
-      cromprobador.then((value) async{
-            this.esvotado = value as bool;
-            print(value.toString()+"value");
-      });
+
 
 
 
@@ -109,39 +99,10 @@ class VistaProductoNoLogin extends StatelessWidget {
           /*3*/
 
           IconButton(
-            icon: Icon(Icons.favorite),
-            tooltip: 'Increase volume by 10',
-            onPressed: () async {
-                  if(esvotado){
-                    print("ya tiene votado en app ident");
-                    servicio.removeVoto(productRes.codigoPelicula, "0105007199"); //ojo cambiar cedula
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              VistaProductoNoLogin(productRes: productRes)
+            icon: Icon(Icons.star_border),
+            tooltip: 'Debe loguearse para votar',
 
-                      ),
-                    );
-                    //esvotado = false;
-
-                  }else{
-                    print("no tiene votado en app ident");
-                    servicio.addVoto(productRes.codigoPelicula, "0105007199"); //ojo cambiar cedula
-                    //esvotado = true;
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              VistaProductoNoLogin(productRes: productRes)
-
-                      ),
-                    );
-
-                  }
-            },
-            color  :    esvotado  ? Colors.redAccent:Colors.black,///cambiar cedula ojo
+            color  :   Colors.blue,///cambiar cedula ojo
           ),
           Text(productRes.listaVoto.length.toString()),
         ],
@@ -175,12 +136,7 @@ class VistaProductoNoLogin extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: const <Widget>[
-            Icon(
-              Icons.favorite,
-              color: Colors.red,
-              size: 24.0,
-              semanticLabel: 'Text to announce in accessibility modes',
-            ),
+
             /*Icon(
               Icons.audiotrack,
               color: Colors.green,
@@ -214,7 +170,7 @@ class VistaProductoNoLogin extends StatelessWidget {
     Widget textSection = Container(
       padding: const EdgeInsets.all(20),
       child: Text(
-        productRes.descripcion,
+      productRes.descripcion,
         softWrap: true,
       ),
     );
@@ -225,24 +181,6 @@ class VistaProductoNoLogin extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const SizedBox(height: 30),
-            RaisedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage(),
-                    //******************************************
-
-                    //DetallesPro(productRes: listaPeliculas[index],),
-                  ),
-                );
-              },
-              color: Colors.white,
-              child: const Text(
-                  'Añadir al Carrito',
-                  style: TextStyle(fontSize: 20)
-              ),
-            ),
             const SizedBox(height: 30),
             RaisedButton(
               onPressed: () {
@@ -283,9 +221,7 @@ class VistaProductoNoLogin extends StatelessWidget {
         child: Text("Comprar",
 
             textAlign: TextAlign.center,
-            style: style.copyWith(
-                fontSize: 20,
-                color: Colors.white)),
+             ),
       ),
     );
     return MaterialApp(
@@ -296,25 +232,7 @@ class VistaProductoNoLogin extends StatelessWidget {
             actions: <Widget>[
         Padding(
         padding: EdgeInsets.only(right: 20.0),
-          child: GestureDetector(
-            onTap: () {
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage(),
-                        //******************************************
-
-                  //DetallesPro(productRes: listaPeliculas[index],),
-                ),
-              );
-
-              },
-            child: Icon(
-              Icons.shopping_cart,
-              size: 26.0,
-            ),
-
-          )
       ),
   ],
 
@@ -361,5 +279,22 @@ class VistaProductoNoLogin extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void cargarPelicula() async {
+    String url = "http://" +
+        servicio.ipServidor +
+        ":8080/ProyectoAppDis/srv/servicios/getPeliculas?id=::$this.idPelicula";
+    final response = await http.get(url);
+    var producto = new  PeliculaModelo.Pelicula();
+    if (response.statusCode == 200) {
+      Iterable list = json.decode(response.body);
+      producto =    PeliculaModelo.Pelicula.fromJson(list.first);
+      print(producto);
+      this.productRes = producto;
+    } else {
+      throw Exception('Error Get Peliculas');
+    }
+
   }
 }

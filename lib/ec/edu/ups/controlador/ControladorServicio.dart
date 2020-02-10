@@ -16,7 +16,7 @@ Future<String> realizarCompra(  String cedula, String direccionEnvio, String num
   var _body = '{ "parametro" : ":$cedula:$direccionEnvio:$numeroTarjeta:"}';
   final response = await http.post(url, headers: _headers, body: _body);
   print(response.body);
-  return "ok";
+  return response.body;
 }
 
 Future<String> addCarrito(String _idPelicula, String _cedulaUsuario) async {
@@ -32,16 +32,14 @@ Future<String> addCarrito(String _idPelicula, String _cedulaUsuario) async {
 }
 
 
-Future<String> addUser(Usuario _usuario) async
+http.Response addUser(Usuario _usuario)
 {
   String url =
       "http://" + ipServidor + ":8080/ProyectoAppDis/srv/servicios/agregarUsuario";
   final _headers = {"Content-type": "application/json"};
- Map<String, dynamic> jsonBody = _usuario.toJson();
+  Map<String, dynamic> jsonBody = _usuario.toJson();
   String _body = json.encode(jsonBody);
-  final response = await http.post(url, headers: _headers, body: _body , encoding: Encoding.getByName('utf8'));
-  print(response.body);
-
+  Future<http.Response> response =  http.post(url, headers: _headers, body: _body ) ;
 
 }
 
@@ -216,7 +214,7 @@ Future<String> addVoto(int idPelicula, String cedula) async {
 }
 
 
-
+/*
 
 Future<bool> comprobarVoto(int idPelicula, String cedula) async {
   /**
@@ -231,7 +229,7 @@ Future<bool> comprobarVoto(int idPelicula, String cedula) async {
   return response.body.toString().contains("true");
 }
 
-
+*/
 
 /*
   Para consumir un get obteniendo las compras de un usuario

@@ -1,11 +1,16 @@
 
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tienda_app/ec/edu/ups/vista/VistaProductoNoLogin.dart';
-import 'package:tienda_app/ec/edu/ups/vista/carritoLista.dart';
-import 'package:tienda_app/ec/edu/ups/vista/ListadoCompras.dart';
+
+import 'package:tienda_app/ec/edu/ups/controlador/ControladorServicio.dart' as servicio;
+import 'package:http/http.dart' as http;
 import 'package:tienda_app/ec/edu/ups/vista/VistaLogin.dart';
+import 'package:tienda_app/ec/edu/ups/vista/VistaProductos.dart';
 //import 'package:tienda_app/VistaProductoNoLogin.dart';
 
 
@@ -17,12 +22,12 @@ final List<int> colorCodes = <int>[600, 500, 100];
 
 //no login productos
 
-void main() => runApp(Menu());
+void main() => runApp(VistaProductosNoLogin());
 
-class Menu extends StatelessWidget {
+class VistaProductosNoLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Peliculas Inicial';
+    final appTitle = 'Bienvenido a PeliStore';
     return MaterialApp(
       title: appTitle,
       home: MyHomePage(title: appTitle),
@@ -47,7 +52,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+print("mostrando todos los productos antes de hacer el login");
 
     var menuEleccion = Drawer(
       child: ListView(
@@ -55,11 +60,13 @@ class MyHomePage extends StatelessWidget {
 
           UserAccountsDrawerHeader(
             accountName: Text("User Cliente"),
-            accountEmail: Text("juancarlos.pelistore@gmail.com"),
+            accountEmail: Text("peliStore@mail.com"
+            ,style: TextStyle(color: Colors.black
+              , fontSize: 20),),
             decoration: BoxDecoration(
               image: DecorationImage(
                   image: NetworkImage(
-                      "https://seeklogo.com/images/M/movie-time-cinema-logo-8B5BE91828-seeklogo.com.png",),
+                      "https://st3.depositphotos.com/15317184/31994/v/1600/depositphotos_319943942-stock-illustration-male-avatar-icon-suitable-for.jpg",),
 
                   fit: BoxFit.cover),
 
@@ -67,9 +74,12 @@ class MyHomePage extends StatelessWidget {
           ),
           Ink(
             color: Colors.white,
+
             child: ListTile(
-              title: Text("listado compras"),
+              leading: Icon(Icons.account_circle),
+              title: Text("Iniciar Sesion"),
               onTap: () {
+                //Navigator.of(context).pop(false);
                 Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage(),
@@ -79,56 +89,21 @@ class MyHomePage extends StatelessWidget {
               },
             ),
           ),
-          Ink(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: Icon(Icons.assignment),
-              title: Text("Ver Compras Realizadas"),
-              onTap: () {
 
-                ///ver compras
-                ///
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage(),
-                    //******************************************
 
-                    //DetallesPro(productRes: listaPeliculas[index],),
-                  ),
-                );
-
-              },
-            ),
-          ),
-          Ink(
-            color: Colors.transparent,
-            child: ListTile(
-              leading: Icon(Icons.add_shopping_cart),
-              title: Text("Carrito Compras"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage(),
-                    //******************************************
-
-                    //DetallesPro(productRes: listaPeliculas[index],),
-                  ),
-                );
-              },
-            ),
-          )
         ],
       ),
     );
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blue,
         actions: <Widget>[
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
+                  //Navigator.of(context).pop(false);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage(),
@@ -151,6 +126,7 @@ class MyHomePage extends StatelessWidget {
 
       drawer: menuEleccion,
       body: FutureBuilder<List<Pelicula>>(
+
         future: getPeliculas(),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
@@ -180,21 +156,33 @@ class PhotosList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final fsp =   SharedPreferences.getInstance()  ;
+    fsp.then((sp){
+      String cedula = "";
+      cedula = sp.getString("cedulalogin");
+      if(cedula.length>=10){
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            VistaProductos()), (Route<dynamic> route) => false);
+      }
+    });
+
     return GridView.builder(
 
 
 
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 1,
+        mainAxisSpacing: 10,
+
       ),
       itemCount: listaPeliculas.length,
       itemBuilder: (context, index) {
-        print(listaPeliculas[index].nombre);
 
         return Card(
-          color: Colors.white60,
+
+          color: Colors.black12,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0),),
-          elevation: 20,
+          elevation: 10,
           child: Column(
             children: <Widget>[
               ListTile(
@@ -206,13 +194,30 @@ class PhotosList extends StatelessWidget {
                 subtitle: Text("\ Precio \$ " + listaPeliculas[index].precio.toString()+"\                "
                     "                                       "
                     " Año:" +listaPeliculas[index].anio.toString()),
-                onTap: () {
+                onTap: () async {
+                    int idPelicula = listaPeliculas[index].codigoPelicula;
+                  /**
+                   * aqui agregar el servicio
+                   */
+                  String url = "http://" +
+                      servicio.ipServidor +
+                      ":8080/ProyectoAppDis/srv/servicios/getPelicula?id=::$idPelicula";
+                  final response = await http.get(url);
+                  var producto = new  Pelicula();
+                    producto =    Pelicula.fromJson(json.decode(response.body));
+                    print(producto);
 
+
+
+                  /**
+                   * ya termina el servicio
+                   */
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          VistaProductoNoLogin(productRes: listaPeliculas[index])
+
+                          VistaProductoNoLogin(productRes: producto)
 
                     ),
                   );
@@ -221,6 +226,8 @@ class PhotosList extends StatelessWidget {
 
                 },
               ),
+
+
               Center(
                 child: FadeInImage.assetNetwork(
                   height: 220,
